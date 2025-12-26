@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_nolbir/apps/auth_screen.dart';
 
 class App003main extends StatelessWidget {
   const App003main({super.key});
 
   @override
   Widget build(BuildContext context) {
-    throw UnimplementedError();
+    return MaterialApp(
+      home: bodyNol(context),
+    );
   }
-  
+
+  Widget bodyNol(BuildContext context) {
+    return AuthScreen();
+  }
 }

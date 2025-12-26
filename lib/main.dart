@@ -32,7 +32,7 @@ class _AppsState extends State<Apps> {
       case 0:
         return App001main();
       case 1:
-        return AuthScreen();
+        return App002main();
       case 2:
         return App003main();
       case 3:
