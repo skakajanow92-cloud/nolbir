@@ -33,7 +33,7 @@ class Utils1 {
 
   Future<int> prefIntGet(String key) async {
     final SharedPreferences preferences = await SharedPreferences.getInstance();
-    return preferences.getInt(key) ?? 0;
+    return preferences.getInt(key) ?? 1;
   }
 
   Future<double> prefDoubleGet(String key) async {
