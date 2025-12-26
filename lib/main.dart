@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_nolbir/apps/auth_screen.dart';
 import 'package:flutter_nolbir/utils/exports.dart';
 import 'package:flutter_nolbir/apps/exports.dart';
 
@@ -31,7 +32,7 @@ class _AppsState extends State<Apps> {
       case 0:
         return App001main();
       case 1:
-        return App002main();
+        return AuthScreen();
       case 2:
         return App003main();
       case 3:
