@@ -1,6 +1,10 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_nolbir/apps/auth_screen.dart';
+import 'package:flutter_nolbir/main.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:riverpod/legacy.dart';
+import 'package:riverpod/riverpod.dart';
 
 class Utils2 {
   // Görsel 2ab199db'deki sunucu IP adresin
@@ -82,6 +86,24 @@ class Utils2 {
       };
     }
   }
+
+  final routerProvider = Provider<GoRouter>((ref) {
+  final authState = ref.watch(authProvider);
+
+  return GoRouter(
+    initialLocation: authState ? '/dashboard' : '/auth',
+    routes: [
+      GoRoute(path: '/auth', builder: (context, state) => const AuthScreen()),
+      GoRoute(path: '/dashboard', builder: (context, state) => const Apps()),
+    ],
+    // Koruma: Giriş yapmamış kullanıcıyı her zaman Auth'a atar
+    redirect: (context, state) {
+      if (!authState && state.matchedLocation != '/auth') return '/auth';
+      if (authState && state.matchedLocation == '/auth') return '/dashboard';
+      return null;
+    },
+  );
+});
 }
 
 // Kullanıcı oturum durumunu tutan provider
