@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_nolbir/apps/auth_screen.dart';
 import 'package:flutter_nolbir/utils/exports.dart';
 import 'package:flutter_nolbir/apps/exports.dart';
 
