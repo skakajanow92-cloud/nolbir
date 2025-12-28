@@ -35,9 +35,7 @@ class _AuthScreenState extends State<AuthScreen> {
       // Başarılıysa Riverpod üzerinden durumu güncelle ve Hive'a kaydet
       ref.read(authProvider.notifier).login(result['token'], result['user']);
     } else {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(result['message'])));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(result['message'])));
     }
   }
 
