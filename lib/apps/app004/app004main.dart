@@ -7,5 +7,4 @@ class App004main extends StatelessWidget {
   Widget build(BuildContext context) {
     throw UnimplementedError();
   }
-  
 }

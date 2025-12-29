@@ -3,7 +3,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 class Utils4 {
   // 1. Singleton Örneklerini Tutacak Map (Box adına göre ayrıştırır)
   static final Map<String, Utils4> _instances = {};
-  
+
   final Box _box;
   final String boxName;
 
@@ -11,7 +11,7 @@ class Utils4 {
   Utils4._internal(this.boxName, this._box);
 
   // 3. Factory Constructor: Box ismine göre ilgili Singleton'ı döndürür
-  // Not: Hive.openBox asenkron olduğu için bu factory'yi kullanmadan önce 
+  // Not: Hive.openBox asenkron olduğu için bu factory'yi kullanmadan önce
   // init() fonksiyonu ile box'ın açılmış olması gerekir.
   static Future<Utils4> getInstance(String boxName) async {
     if (!_instances.containsKey(boxName)) {
@@ -59,3 +59,29 @@ class Utils4 {
     return _box.keys.toList();
   }
 }
+
+/*
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Utils4.initHive(); // Hive motorunu başlat
+  runApp(const MyApp());
+}
+
+void testStorage() async {
+  // "Kullanıcı" tablosuna erişim
+  final userStorage = await Utils4.getInstance('user_box');
+  await userStorage.write('name', 'Can');
+
+  // "Ayarlar" tablosuna erişim
+  final settingsStorage = await Utils4.getInstance('settings_box');
+  await settingsStorage.write('dark_mode', true);
+
+  // Veri okuma (Tip belirterek)
+  String? name = userStorage.read<String>('name');
+  bool isDark = settingsStorage.read<bool>('dark_mode', defaultValue: false)!;
+  
+  print("İsim: $name, Gece Modu: $isDark");
+}
+
+*/

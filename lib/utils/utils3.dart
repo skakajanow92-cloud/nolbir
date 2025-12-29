@@ -113,3 +113,29 @@ class Utils3 {
     }
   }
 }
+
+/*
+
+final userApi = Utils3(url: "https://auth-api.com");
+final productApi = Utils3(url: "https://shop-api.com");
+
+// Kullanıcı çek
+var userRes = await userApi.get("/profile");
+
+// Ürün ekle
+await productApi.post("/products", data: {"id": 1, "name": "Laptop"});
+
+----------------------------------------------------------------------
+
+void indir() async {
+  String? yol = await Utils3(url: "https://files.com").downloadFile(
+    "https://files.com/resim.jpg", 
+    "profil_resmi.jpg"
+  );
+  
+  if (yol != null) {
+    print("Dosya şuraya kaydedildi: $yol");
+  }
+}
+
+*/
