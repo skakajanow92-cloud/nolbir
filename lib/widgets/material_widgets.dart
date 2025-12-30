@@ -3,84 +3,143 @@ import 'package:flutter_nolbir/utils/exports.dart';
 import 'package:flutter_nolbir/widgets/material_colors.dart';
 import 'package:flutter_nolbir/widgets/material_icons.dart';
 
-// ignore: must_be_immutable
-class MaterialWidgets extends StatelessWidget {
-  MaterialWidgets({super.key});
-  MaterialColors materialColors = MaterialColors();
-  MaterialIcons materialIcons = MaterialIcons();
-  Utils1 utils1 = Utils1();
-  @override
-  Widget build(BuildContext context) {
-    throw UnimplementedError();
-  }
+// --- Model Sınıfları: Tip Güvenliği ve Okunabilirlik İçin ---
 
-  Widget createListTile(BuildContext context, List<List<dynamic>> params) {
+class TextParams {
+  final String text;
+  final int colorCode;
+  final double fontSize;
+
+  // Eski List<dynamic> yapısından kolayca geçiş yapmak için.
+  TextParams.fromList(List<dynamic> list)
+    : text = list[0] as String,
+      colorCode = list[1] as int,
+      fontSize = (list[2] as num).toDouble();
+}
+
+class ListTileParams {
+  final TextParams title;
+  final TextParams subtitle;
+  final List<dynamic> leadingIconData;
+  final List<dynamic> trailingIconData;
+  final int onTapFuncId;
+  final int onLongPressFuncId;
+  final int tileColorCode;
+
+  ListTileParams.fromList(List<List<dynamic>> list)
+    : title = TextParams.fromList(list[0]),
+      subtitle = TextParams.fromList(list[1]),
+      onTapFuncId = list[2][0] as int,
+      onLongPressFuncId = list[2][1] as int,
+      tileColorCode = list[2][2] as int,
+      leadingIconData = list[2][3] as List<dynamic>,
+      trailingIconData = list[2][4] as List<dynamic>;
+}
+
+enum ElevatedButtonType { iconOnly, textOnly, iconTextColumn, iconTextRow }
+
+class ElevatedButtonParams {
+  final ElevatedButtonType type;
+  final int onPressedFuncId;
+  final List<dynamic> iconData;
+  final TextParams? textParams;
+
+  ElevatedButtonParams.fromList(List<List<dynamic>> list)
+    : type = ElevatedButtonType.values[list[0][0] as int],
+      onPressedFuncId = list[1][0] as int,
+      iconData = list[1],
+      textParams = list.length > 2 ? TextParams.fromList(list[2]) : null;
+}
+
+class TextButtonParams {
+  final int onPressedFuncId;
+  final TextParams textParams;
+
+  TextButtonParams.fromList(List<List<dynamic>> list)
+    : onPressedFuncId = list[0][0] as int,
+      textParams = TextParams.fromList(list[1]);
+}
+
+// --- Modernize Edilmiş Widget Fabrikası Sınıfı ---
+
+class MaterialWidgets {
+  final MaterialColors materialColors = MaterialColors();
+  final MaterialIcons materialIcons = MaterialIcons();
+  // Utils1 bir singleton olduğu için doğrudan fabrika yapıcısını çağırabiliriz.
+  final Utils1 utils1 = Utils1();
+
+  Widget createListTile(BuildContext context, ListTileParams params) {
     return ListTile(
-      title: createText(context, params[0]),
-      subtitle: createText(context, params[1]),
-      leading: materialIcons.generalIcons(params[2][3]),
-      trailing: materialIcons.generalIcons(params[2][4]),
-      onTap: () {
-        utils1.functions(funcNumber: params[2][0]);
-      },
-      onLongPress: () {
-        utils1.functions(funcNumber: params[2][1]);
-      },
-      tileColor: materialColors.colors(params[2][2]),
+      title: createText(context, params.title),
+      subtitle: createText(context, params.subtitle),
+      leading: materialIcons.generalIcons(params.leadingIconData),
+      trailing: materialIcons.generalIcons(params.trailingIconData),
+      onTap: () => utils1.functions(funcNumber: params.onTapFuncId),
+      onLongPress: () => utils1.functions(funcNumber: params.onLongPressFuncId),
+      tileColor: materialColors.colors(params.tileColorCode),
     );
   }
 
-  Widget createText(BuildContext context, List<dynamic> params) {
+  Widget createText(BuildContext context, TextParams params) {
     return Text(
-      params[0],
+      params.text,
       style: TextStyle(
-        color: materialColors.colors(params[1]),
-        fontSize: params[2],
+        color: materialColors.colors(params.colorCode),
+        fontSize: params.fontSize,
       ),
     );
   }
 
-  Widget createTextButton(BuildContext context, List<List<dynamic>> params) {
+  Widget createTextButton(BuildContext context, TextButtonParams params) {
     return TextButton(
-      onPressed: utils1.functions(funcNumber: params[0][0]),
-      child: createText(context, params[1]),
+      onPressed: () => utils1.functions(funcNumber: params.onPressedFuncId),
+      child: createText(context, params.textParams),
     );
   }
 
   Widget createElevatedButton(
     BuildContext context,
-    List<List<dynamic>> params,
+    ElevatedButtonParams params,
   ) {
-    if (params[0][0] == 0) {
-      return ElevatedButton(
-        onPressed: utils1.functions(funcNumber: params[1][0]),
-        child: materialIcons.generalIcons(params[1]),
-      );
-    } else if (params[0][0] == 1) {
-      return ElevatedButton(
-        onPressed: utils1.functions(funcNumber: params[1][0]),
-        child: createText(context, params[2]),
-      );
-    } else if (params[0][0]==2) {
-      return ElevatedButton(
-        onPressed: utils1.functions(funcNumber: params[1][0]),
-        child: Column(
-          children: [
-            materialIcons.generalIcons(params[1]),
-            createText(context, params[2]),
-          ],
-        ),
-      );
-    } else {
-      return ElevatedButton(
-        onPressed: utils1.functions(funcNumber: params[1][0]),
-        child: Row(
-          children: [
-            materialIcons.generalIcons(params[1]),
-            createText(context, params[2]),
-          ],
-        ),
-      );
+    final onPressed = () =>
+        utils1.functions(funcNumber: params.onPressedFuncId);
+
+    switch (params.type) {
+      case ElevatedButtonType.iconOnly:
+        return ElevatedButton(
+          onPressed: onPressed,
+          child: materialIcons.generalIcons(params.iconData),
+        );
+      case ElevatedButtonType.textOnly:
+        return ElevatedButton(
+          onPressed: onPressed,
+          child: createText(context, params.textParams!),
+        );
+      case ElevatedButtonType.iconTextColumn:
+        return ElevatedButton(
+          onPressed: onPressed,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              materialIcons.generalIcons(params.iconData),
+              if (params.textParams != null)
+                createText(context, params.textParams!),
+            ],
+          ),
+        );
+      case ElevatedButtonType.iconTextRow:
+        return ElevatedButton(
+          onPressed: onPressed,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              materialIcons.generalIcons(params.iconData),
+              const SizedBox(width: 8),
+              if (params.textParams != null)
+                createText(context, params.textParams!),
+            ],
+          ),
+        );
     }
   }
 }

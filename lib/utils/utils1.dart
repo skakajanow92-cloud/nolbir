@@ -1,27 +1,32 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Utils1 {
-  void prefIntInsert(String key, int num) async {
+  // Singleton Yapısı
+  Utils1._internal();
+  static final Utils1 _instance = Utils1._internal();
+  factory Utils1() => _instance;
+
+  Future<void> prefIntInsert(String key, int num) async {
     final SharedPreferences preferences = await SharedPreferences.getInstance();
     await preferences.setInt(key, num);
   }
 
-  void prefDoubleInsert(String key, double dbl) async {
+  Future<void> prefDoubleInsert(String key, double dbl) async {
     final SharedPreferences preferences = await SharedPreferences.getInstance();
     await preferences.setDouble(key, dbl);
   }
 
-  void prefStringInsert(String key, String str) async {
+  Future<void> prefStringInsert(String key, String str) async {
     final SharedPreferences preferences = await SharedPreferences.getInstance();
     await preferences.setString(key, str);
   }
 
-  void prefBoolInsert(String key, bool boolean) async {
+  Future<void> prefBoolInsert(String key, bool boolean) async {
     final SharedPreferences preferences = await SharedPreferences.getInstance();
     await preferences.setBool(key, boolean);
   }
 
-  void prefListInsert(String key, List<String> lst) async {
+  Future<void> prefListInsert(String key, List<String> lst) async {
     final SharedPreferences preferences = await SharedPreferences.getInstance();
     await preferences.setStringList(key, lst);
   }
@@ -51,25 +56,31 @@ class Utils1 {
     return preferences.getStringList(key) ?? [];
   }
 
-  dynamic functions({
+  Future<void> functions({
     required int funcNumber,
-    List<String> sparams=const[],
-    List<int> iparams=const[],
-    List<bool> bparams=const[],
-    List<double> dparams=const[],
-  }) {
+    List<String> sparams = const [],
+    List<int> iparams = const [],
+    List<bool> bparams = const [],
+    List<double> dparams = const [],
+  }) async {
     switch (funcNumber) {
       case 0:
-        prefIntInsert(sparams.first, iparams.first);
+        await prefIntInsert(sparams.first, iparams.first);
+        break;
       case 1:
-        prefDoubleInsert(sparams.first, dparams.first);
+        await prefDoubleInsert(sparams.first, dparams.first);
+        break;
       case 2:
-        prefBoolInsert(sparams.first, bparams.first);
+        await prefBoolInsert(sparams.first, bparams.first);
+        break;
       case 3:
-        prefStringInsert(sparams.first, sparams[1]);
+        await prefStringInsert(sparams.first, sparams[1]);
+        break;
       case 4:
-        prefListInsert(sparams.first, sparams.sublist(1));
+        await prefListInsert(sparams.first, sparams.sublist(1));
+        break;
       default:
+        break;
     }
   }
 }

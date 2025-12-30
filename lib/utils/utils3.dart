@@ -1,6 +1,8 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as p;
 
 class Utils3 {
   static final Map<String, Utils3> _instances = {};
@@ -34,14 +36,14 @@ class Utils3 {
       InterceptorsWrapper(
         onRequest: (options, handler) {
           // Buraya Token ekleme mantığı gelebilir
-          print("🚀 İstek: ${options.method} -> ${options.uri}");
+          debugPrint("🚀 İstek: ${options.method} -> ${options.uri}");
           return handler.next(options);
         },
         onResponse: (response, handler) => handler.next(response),
         onError: (DioException e, handler) {
           // Hata yakalama ve Türkçeleştirme
           String errorMessage = _handleError(e);
-          print("❌ Hata: $errorMessage");
+          debugPrint("❌ Hata: $errorMessage");
           return handler.next(e);
         },
       ),
@@ -81,7 +83,7 @@ class Utils3 {
 
   // --- DOSYA YÜKLEME (UPLOAD) ---
   Future<Response> upload(String endpoint, File file) async {
-    String fileName = file.path.split('/').last;
+    String fileName = p.basename(file.path);
     FormData formData = FormData.fromMap({
       "file": await MultipartFile.fromFile(file.path, filename: fileName),
     });
@@ -100,7 +102,7 @@ class Utils3 {
         savePath,
         onReceiveProgress: (received, total) {
           if (total != -1) {
-            print(
+            debugPrint(
               "İndiriliyor: %${(received / total * 100).toStringAsFixed(0)}",
             );
           }
@@ -108,9 +110,15 @@ class Utils3 {
       );
       return savePath; // İndirilen dosyanın yolunu döndürür
     } catch (e) {
-      print("İndirme hatası: $e");
+      debugPrint("İndirme hatası: $e");
       return null;
     }
+  }
+
+  // BAĞLANTIYI KAPAT
+  void close({bool force = false}) {
+    _dio.close(force: force);
+    _instances.remove(baseUrl);
   }
 }
 

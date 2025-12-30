@@ -58,6 +58,12 @@ class Utils4 {
   List<dynamic> getAllKeys() {
     return _box.keys.toList();
   }
+
+  // BOX'I KAPAT
+  Future<void> close() async {
+    await _box.close();
+    _instances.remove(boxName); // Map'ten de kaldırarak belleği temizle
+  }
 }
 
 /*
